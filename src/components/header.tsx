@@ -8,8 +8,6 @@ export const Header = () => {
         <span>/</span>
         <a href="#" className="hover:underline">ログイン</a>
       </div>
-
-      
     
   );
 };
