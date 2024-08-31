@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Inter } from "next/font/google";
 
+<<<<<<< Updated upstream
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
@@ -78,6 +79,48 @@ export default function Home() {
             Learn about Next.js in an interactive course with&nbsp;quizzes!
           </p>
         </a>
+=======
+const Home = () => {
+  const users = [
+    { id: 1, name: 'Alice', position: 'Manager' },
+    { id: 2, name: 'Bob', position: 'Developer' },
+    { id: 3, name: 'Charlie', position: 'Designer' },
+    { id: 4, name: 'Dave', position: 'Tester' },
+  ];
+
+  return (
+    <div className="min-h-screen flex flex-wrap justify-center items-center">
+      {Array.from({ length: 6 }).map((_, index) => (
+        <div key={index} className="relative m-12">
+          {/* テーブル */}
+          <div className="w-40 h-40 border-2 border-gray-300 flex justify-center items-center">
+            <p>Table {index + 1}</p>
+          </div>
+
+          {/* 椅子とユーザアイコン */}
+          <div className="absolute inset-0">
+            {users.map((user, i) => (
+              <div
+                key={user.id}
+                className="w-8 h-8 bg-gray-200 rounded-full absolute flex justify-center items-center"
+                style={{
+                  top: i === 0 ? '-2rem' : i === 1 ? 'auto' : i === 2 ? 'calc(50% - 1rem)' : 'calc(50% - 1rem)',
+                  bottom: i === 1 ? '-2rem' : 'auto',
+                  left: i === 2 ? '-2rem' : i === 3 ? 'auto' : 'calc(50% - 1rem)',
+                  right: i === 3 ? '-2rem' : 'auto',
+                }}
+                title={`${user.name} - ${user.position}`}
+              >
+                <span role="img" aria-label="user">👤</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
+>>>>>>> Stashed changes
 
         <a
           href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
@@ -96,6 +139,7 @@ export default function Home() {
           </p>
         </a>
 
+<<<<<<< Updated upstream
         <a
           href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
           className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
@@ -116,3 +160,6 @@ export default function Home() {
     </main>
   );
 }
+=======
+
+>>>>>>> Stashed changes
