@@ -1,15 +1,10 @@
 import React from 'react';
+import {Header} from "../components/header"
 
 const Home = () => {
   return (
     <div className="relative min-h-screen flex flex-wrap justify-center items-center">
-      {/* ヘッダー */}
-      <div className="absolute top-0 right-0 p-4 flex space-x-4 text-sm">
-        <a href="#" className="hover:underline">人を探す</a>
-        <a href="#" className="hover:underline">会員登録</a>
-        <span>/</span>
-        <a href="#" className="hover:underline">ログイン</a>
-      </div>
+      <Header />
 
       {/* テーブルと椅子 */}
       {Array.from({ length: 6 }).map((_, index) => (
