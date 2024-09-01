@@ -109,7 +109,7 @@ const AllImagePage: React.FC = () => {
         const { data: pairingData, error: pairingError } = await supabase
           .from('pairing')
           .select('helped')
-          .eq('help', 83);
+          .eq('help', 74);
 
         if (pairingError) {
           console.error('Error fetching pairing data:', pairingError);

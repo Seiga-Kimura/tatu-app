@@ -177,16 +177,31 @@ const Home: React.FC = () => {
                 <div className="flex flex-col justify-center">
                   <button
                     onClick={handleRequestHelp}
-                    className="bg-blue-500 text-white px-4 py-2 rounded mb-2"
+                    className="bg-blue-500 text-white px-4 py-2 rounded mb-1"
                   >
                     助けをリクエストする
                   </button>
+
+            {/* "困っていること"ボタンをlocalhostのall_images.txsにリンク */}
+            <a
+              href="/all_image" // ローカルホストのリンクを指定
+              className="mt-4 bg-gray-500 text-white px-4 py-2 rounded mb-1"
+            >
+              解決したことリスト
+            </a>
+
                   <button
                     onClick={closePopup}
                     className="bg-gray-500 text-white px-4 py-2 rounded"
                   >
+
+                  
                     閉じる
                   </button>
+
+
+
+
                 </div>
               </>
             )}
