@@ -163,7 +163,7 @@ const Home: React.FC = () => {
                 <div
                   key={person.id}
                   className={`w-8 h-8 rounded-full absolute flex justify-center items-center cursor-pointer ${
-                    person.tableId === 1 && index === 1
+                    person.tableId === 1 && index === 3
                       ? 'bg-green-500'
                       : person.isEmpty ? 'bg-red-500' : 'bg-gray-200'
                   }`}
@@ -198,6 +198,8 @@ const Home: React.FC = () => {
                 >
                   閉じる
                 </button>
+
+
               </div>
             ) : (
               <>
@@ -220,6 +222,15 @@ const Home: React.FC = () => {
                   >
                     助けをリクエストする
                   </button>
+
+            {/* "困っていること"ボタンをlocalhostのall_images.txsにリンク */}
+            <a
+              href="/all_image" // ローカルホストのリンクを指定
+              className="mt-4 bg-gray-500 text-white px-4 py-2 rounded mb-1"
+            >
+              解決したことリスト
+            </a>
+
                   <button
                     onClick={closePopup}
                     className="bg-gray-500 text-white px-4 py-2 rounded"

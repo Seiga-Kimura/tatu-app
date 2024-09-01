@@ -122,7 +122,7 @@ const Home: React.FC = () => {
                     
                     
 
-                    person.tableId === 5 && index === 0
+                    person.tableId === 5 && index === 3
                       ? 'bg-green-500'
                       : person.isEmpty ? 'bg-red-500' : 'bg-gray-200'
                   
