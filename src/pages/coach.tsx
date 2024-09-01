@@ -99,9 +99,17 @@ const Home: React.FC = () => {
     setSelectedPerson(null);
   };
 
+
+  const closerequest = () => {
+    setrequestVisible(false);
+  };
+  
+
   const closeNotification = () => {
     setNotification(null);
   };
+
+
 
   const handleRequestHelp = async () => {
     if (selectedPerson) {
@@ -229,7 +237,13 @@ const Home: React.FC = () => {
 {requestVisible && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
           <div className="w-3/4 bg-white p-8 rounded-lg flex justify-between">
-          <h2 className="text-xl mb-4">予約リクエストがあります</h2>
+          <h2 className="text-xl mb-4">小林陽介さんからのリクエストがあります</h2>
+          <button
+                  onClick={closerequest}
+                  className="mt-4 bg-gray-500 text-white px-4 py-2 rounded"
+                >
+                  閉じる
+                </button>
             
           </div>
         </div>
