@@ -19,11 +19,22 @@ interface Table {
   name: string;
 }
 
+interface PairingPayload {
+  new: {
+    help: number;
+    helped: number;
+    // 他の必要なフィールドがあればここに追加
+  };
+  // 他の必要なフィールドがあればここに追加
+}
+
 const Home: React.FC = () => {
   const [tables, setTables] = useState<Table[]>([]);
   const [persons, setPersons] = useState<Person[]>([]);
   const [popupVisible, setPopupVisible] = useState(false);
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+  const [notification, setNotification] = useState<string | null>(null);
+  const [requestVisible, setrequestVisible] = useState(false);
 
   // SupabaseからテーブルとPersonsのデータを取得
   useEffect(() => {
@@ -60,6 +71,24 @@ const Home: React.FC = () => {
     fetchTablesAndPersons();
   }, []);
 
+  // pairingテーブルに新しいデータが追加されたときの通知
+  useEffect(() => {
+    const pairingChannel = supabase
+      .channel('pairing-channel')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'pairing' }, (payload: PairingPayload) => {
+        console.log(payload)
+        if (payload.new.help === 74) {
+          
+          setrequestVisible(true);
+        }
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(pairingChannel);
+    };
+  }, []);
+
   const handleIconClick = (person: Person) => {
     setSelectedPerson(person);
     setPopupVisible(true);
@@ -68,6 +97,10 @@ const Home: React.FC = () => {
   const closePopup = () => {
     setPopupVisible(false);
     setSelectedPerson(null);
+  };
+
+  const closeNotification = () => {
+    setNotification(null);
   };
 
   const handleRequestHelp = async () => {
@@ -90,14 +123,21 @@ const Home: React.FC = () => {
   return (
     <div className="relative min-h-screen flex flex-wrap justify-center items-center">
       <div className="absolute top-0 right-0 p-4 flex space-x-4 text-sm">
-        <a href="#" className="hover:underline">User:小林陽介</a>
-        <a href="#" className="hover:underline">ID:89</a>
+        <a href="#" className="hover:underline">User:佐藤花子</a>
+        <a href="#" className="hover:underline">ID:74</a>
         <a href="#" className="hover:underline">人を探す</a>
         <a href="#" className="hover:underline">会員登録</a>
         <span>/</span>
         <a href="#" className="hover:underline">ログイン</a>
-
       </div>
+
+      {/* Notification */}
+      {notification && (
+        <div className="fixed top-0 left-0 w-full bg-green-500 text-white p-4 text-center">
+          {notification}
+          <button onClick={closeNotification} className="ml-4 text-sm">閉じる</button>
+        </div>
+      )}
 
       {/* TablesとPersonsデータを表示 */}
       {tables.map((table) => (
@@ -115,14 +155,9 @@ const Home: React.FC = () => {
                 <div
                   key={person.id}
                   className={`w-8 h-8 rounded-full absolute flex justify-center items-center cursor-pointer ${
-                    
-                    
-
-                    person.tableId === 5 && index === 0
+                    person.tableId === 1 && index === 1
                       ? 'bg-green-500'
                       : person.isEmpty ? 'bg-red-500' : 'bg-gray-200'
-                  
-                    
                   }`}
                   style={
                     index === 0
@@ -188,7 +223,18 @@ const Home: React.FC = () => {
             )}
           </div>
         </div>
-      )}
+      )
+     }
+
+{requestVisible && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+          <div className="w-3/4 bg-white p-8 rounded-lg flex justify-between">
+          <h2 className="text-xl mb-4">予約リクエストがあります</h2>
+            
+          </div>
+        </div>
+      )} 
+
     </div>
   );
 };
