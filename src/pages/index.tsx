@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { supabase } from './supabaseClient'; // 先ほど作成したSupabaseクライアントをインポート
+import { supabase } from './supabaseClient'; // Supabaseクライアントのインポート
 
 interface Person {
   id: number;
@@ -7,6 +7,11 @@ interface Person {
   lastName: string;
   gender: string;
   tableId: number;
+  isEmpty: boolean;
+  skill1: string;
+  skill2: string;
+  skill3: string;
+  trouble: string;
 }
 
 interface Table {
@@ -18,22 +23,23 @@ const Home: React.FC = () => {
   const [tables, setTables] = useState<Table[]>([]);
   const [persons, setPersons] = useState<Person[]>([]);
   const [popupVisible, setPopupVisible] = useState(false);
-  const [selectedTable, setSelectedTable] = useState<Table | null>(null);
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
 
+  // SupabaseからテーブルとPersonsのデータを取得
   useEffect(() => {
-   
-
-    // Personsデータを取得
-    const fetchPersons = async () => {
+    const fetchTablesAndPersons = async () => {
+      const { data: tablesData, error: tablesError } = await supabase
+        .from('tables')
+        .select('*');
+      
       const { data: personsData, error: personsError } = await supabase
         .from('persons')
         .select('*');
 
-      if (personsError) {
-        console.error(personsError);
+      if (tablesError || personsError) {
+        console.error('Error fetching data:', tablesError || personsError);
       } else {
-        console.log(personsData);
+        setTables(tablesData);
         setPersons(
           personsData.map((person: any) => ({
             id: person.id,
@@ -41,12 +47,17 @@ const Home: React.FC = () => {
             lastName: person.last_name,
             gender: person.gender,
             tableId: person.table_id,
+            isEmpty: person.is_empty,
+            skill1: person.skill1,
+            skill2: person.skill2,
+            skill3: person.skill3,
+            trouble: person.trouble,
           }))
         );
       }
     };
-   
-    fetchPersons();
+
+    fetchTablesAndPersons();
   }, []);
 
   const handleIconClick = (person: Person) => {
@@ -56,13 +67,29 @@ const Home: React.FC = () => {
 
   const closePopup = () => {
     setPopupVisible(false);
-    setSelectedTable(null);
     setSelectedPerson(null);
+  };
+
+  const handleRequestHelp = async () => {
+    if (selectedPerson) {
+      // ヘルプリクエストを送信するために、pairingテーブルにデータを挿入
+      const { data, error } = await supabase
+        .from('pairing')
+        .insert([
+          { help: selectedPerson.id, helped: selectedPerson.id } // 自分自身にリクエストを出す場合
+        ]);
+
+      if (error) {
+        console.error('Error inserting pairing:', error);
+      } else {
+        console.log('Help request inserted:', data);
+        closePopup();
+      }
+    }
   };
 
   return (
     <div className="relative min-h-screen flex flex-wrap justify-center items-center">
-      {/* ヘッダー */}
       <div className="absolute top-0 right-0 p-4 flex space-x-4 text-sm">
         <a href="#" className="hover:underline">人を探す</a>
         <a href="#" className="hover:underline">会員登録</a>
@@ -70,21 +97,24 @@ const Home: React.FC = () => {
         <a href="#" className="hover:underline">ログイン</a>
       </div>
 
-      {/* テーブルと椅子 */}
-        <div className="relative m-12">
-          {/* テーブル */}
+      {/* TablesとPersonsデータを表示 */}
+      {tables.map((table) => (
+        <div key={table.id} className="relative m-12">
+          {/* テーブル名の表示 */}
           <div className="w-40 h-40 border-2 border-gray-300 flex justify-center items-center">
-            <p>test</p>
+            <p>{table.name}</p>
           </div>
 
-          {/* 椅子とユーザーアイコン */}
+          {/* テーブルに関連するPersonの表示 */}
           <div className="absolute inset-0">
             {persons
-              //.filter(person => person.tableId === table.id)
+              .filter(person => person.tableId === table.id)
               .map((person, index) => (
                 <div
                   key={person.id}
-                  className="w-8 h-8 bg-gray-200 rounded-full absolute flex justify-center items-center cursor-pointer"
+                  className={`w-8 h-8 rounded-full absolute flex justify-center items-center cursor-pointer ${
+                    person.isEmpty ? 'bg-red-500' : 'bg-gray-200'
+                  }`}
                   style={
                     index === 0
                       ? { top: '-2rem', left: 'calc(50% - 1rem)' }
@@ -96,30 +126,43 @@ const Home: React.FC = () => {
                   }
                   onClick={() => handleIconClick(person)}
                 >
-                  <span role="img" aria-label="user">
-                    👤{index + 1}
-                  </span>
+                  <span role="img" aria-label="user">👤</span>
                 </div>
               ))}
           </div>
         </div>
+      ))}
 
       {/* ポップアップ */}
       {popupVisible && selectedPerson && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-end">
-          <div className="w-full h-1/2 bg-white p-8 rounded-t-lg">
-            <h2 className="text-xl mb-4">
-              Table {selectedTable?.name} - {selectedPerson.lastName} {selectedPerson.firstName}'s Details
-            </h2>
-            <p>Number: {selectedPerson.id}</p>
-            <p>Name: {selectedPerson.lastName} {selectedPerson.firstName}</p>
-            <p>Gender: {selectedPerson.gender}</p>
-            <button
-              onClick={closePopup}
-              className="mt-4 bg-blue-500 text-white px-4 py-2 rounded"
-            >
-              Close
-            </button>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+          <div className="w-3/4 bg-white p-8 rounded-lg flex justify-between">
+            <div>
+              <h2 className="text-xl mb-4">
+                {selectedPerson.lastName} {selectedPerson.firstName} の詳細
+              </h2>
+              <p>ID: {selectedPerson.id}</p>
+              <p>Name: {selectedPerson.lastName} {selectedPerson.firstName}</p>
+              <p>Gender: {selectedPerson.gender}</p>
+              <p>Skill 1: {selectedPerson.skill1}</p>
+              <p>Skill 2: {selectedPerson.skill2}</p>
+              <p>Skill 3: {selectedPerson.skill3}</p>
+              <p>Trouble: {selectedPerson.trouble}</p>
+            </div>
+            <div className="flex flex-col justify-center">
+              <button
+                onClick={handleRequestHelp}
+                className="bg-blue-500 text-white px-4 py-2 rounded mb-2"
+              >
+                助けをリクエストする
+              </button>
+              <button
+                onClick={closePopup}
+                className="bg-gray-500 text-white px-4 py-2 rounded"
+              >
+                閉じる
+              </button>
+            </div>
           </div>
         </div>
       )}
