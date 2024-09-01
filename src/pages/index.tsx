@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { supabase } from './supabaseClient'; // Supabaseクライアントのインポート
 
@@ -87,8 +88,10 @@ const Home: React.FC = () => {
     }
   };
 
+
   return (
     <div className="relative min-h-screen flex flex-wrap justify-center items-center">
+
       <div className="absolute top-0 right-0 p-4 flex space-x-4 text-sm">
         <a href="#" className="hover:underline">User:小林陽介</a>
         <a href="#" className="hover:underline">ID:89</a>
@@ -98,6 +101,7 @@ const Home: React.FC = () => {
         <a href="#" className="hover:underline">ログイン</a>
 
       </div>
+
 
       {/* TablesとPersonsデータを表示 */}
       {tables.map((table) => (
